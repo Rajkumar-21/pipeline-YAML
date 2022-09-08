@@ -15,38 +15,38 @@ trigger:
 - master
 
 stages:
-- stage: Stage1
+- stage: StagefromA
   jobs:
-  - job: Linux-from-stage1
+  - job: LinuxfromstageA
     pool:
       vmImage: ubuntu-latest
       steps:
-      - script: echo "Hello, world! from stage1"
-      displayName: 'Onleine script in stage 1 linux machine'
-  - job: Windows-from-stage1
-    displayName: Windows-Pool-from-stage1
+      - script: echo "Hello, world! from stageA"
+      displayName: 'Onleine script in stage A linux machine'
+  - job: WindowsfromstageA
+    displayName: Windows-Pool-from-stageA
     pool:
      vmImage: 'windows-2019'
     steps:
      - script: |
-        Write-Host "Hello All from Stage1"
+        Write-Host "Hello All from StageA"
         Write-Host $(osinfo)
         Write-Host $(date)
 
-- stage: Stage2
+- stage: StagefromB
   jobs:
-  - job: Linux-from-stage2
+  - job: LinuxfromstageB
     pool:
       vmImage: ubuntu-latest
       steps:
-      - script: echo "Hello, world! from stage2"
-        displayName: 'Stage2-Linux'
-  - job: Windows-from-stage2
-    displayName: Windows-Pool-from-stage2
+      - script: echo "Hello, world! from stageB"
+        displayName: 'StageB-Linux'
+  - job: WindowsfromstageB
+    displayName: Windows-Pool-from-stageB
     pool:
      vmImage: 'windows-2019'
     steps:
      - script: |
-        Write-Host "Hello All! from stage2"
+        Write-Host "Hello All! from stageB"
         Write-Host $(osinfo)
         Write-Host $(date)
