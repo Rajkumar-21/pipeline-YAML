@@ -8,6 +8,9 @@ trigger:
 resources:
  repositories:
    - repository: spacegame-web
+     type: github
+     endpoint: MyGitHubServiceConnection
+     name: Rajkumar-21/spacegame-web
      trigger:
       branches:
         include:
