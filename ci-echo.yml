@@ -3,6 +3,14 @@
 # Add steps that build, run tests, deploy, and more:
 # https://aka.ms/yaml
 
+name: System Basic Info Checks!
+
+
+variables:
+- name: Date
+  value: Get-Date
+- name: osinfo
+  value: (Get-WMIObject win32_operatingsystem).name
 trigger:
 - master
 
@@ -17,5 +25,14 @@ steps:
   inputs:
     script: |
       echo "Welcome to the CI/CD Task"
-         
-      echo 'Current Date: $(date)'
+      echo "System UpTime Info:"
+      systeminfo | Select-String "OS version","System Boot Time"
+
+- task: PowerShell@2
+  inputs:
+    targetType: 'inline'
+    script: |
+      Write-Host $(Hostname)
+      Write-Host $(osinfo)
+
+
