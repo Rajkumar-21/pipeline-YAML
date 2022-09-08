@@ -7,7 +7,7 @@ name: System Basic Info Checks!
 
 
 variables:
-- name: Date
+- name: date
   value: Get-Date
 - name: osinfo
   value: (Get-WMIObject win32_operatingsystem).name
@@ -17,21 +17,21 @@ trigger:
 pool:
   vmImage: 'windows-2019'
 
-steps:
-- script: echo Hello, world!
-  displayName: 'Run a one-line script'
-
-- task: CmdLine@2
-  inputs:
-    script: |
-      echo "Welcome to the CI/CD Task"
-      echo "This is the Sample in CMDLine task"
-
-- task: PowerShell@2
-  inputs:
-    targetType: 'inline'
-    script: |
-      Write-Host $(osinfo)
-      Write-Host "Hello"
-
+jobs:
+- job:
+  pool:
+    vmImage: ubuntu-latest
+    steps:
+    - script: echo Hello, world!
+      displayName: 'Run a one-line script'
+  
+- job: Windows
+  displayName: Windows Pool
+  pool:
+    vmImage: 'windows-2019'
+  steps:
+    - script: |
+       Write-Host "Hello All!""
+       Write-Host $(osinfo)
+       Write-Host $(date)
 
