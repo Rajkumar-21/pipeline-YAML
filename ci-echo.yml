@@ -31,7 +31,6 @@ steps:
   inputs:
     targetType: 'inline'
     script: |
-      Write-Host $(Hostname)
       Write-Host $(osinfo)
 
 
