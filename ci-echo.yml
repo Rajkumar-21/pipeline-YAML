@@ -15,7 +15,7 @@ trigger:
 - master
 
 pool:
-  vmImage: ubuntu-latest
+  vmImage: 'windows-2019'
 
 steps:
 - script: echo Hello, world!
@@ -32,5 +32,6 @@ steps:
     targetType: 'inline'
     script: |
       Write-Host $(osinfo)
+      Write-Host "Hello"
 
 
