@@ -18,7 +18,7 @@ stages:
             inputs:
               targetType: inline
               script: |
-               Write-Host $HOME
+               ssaWrite-Host $HOME
 
   - stage: stageB
     dependsOn: stageA
