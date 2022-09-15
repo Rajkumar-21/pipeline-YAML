@@ -18,7 +18,8 @@ stages:
             inputs:
               targetType: inline
               script: |
-               Write-Host "Hello this is from JobA"
+               Write-Host $HOME
+
   - stage: stageB
     dependsOn: stageA
     jobs:
@@ -27,4 +28,4 @@ stages:
         pool:
           vmImage: ubuntu-latest
         steps:
-          - script: echo "Hello from shell in JobB"
+          - script: uname -i
