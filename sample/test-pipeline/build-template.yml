@@ -1,0 +1,61 @@
+parameters:
+- name:  buildConfiguration
+- name: dotnetSdkVersion
+- name: wwwrootDir
+  type: string
+  default: 'Tailspin.SpaceGame.Web/wwwroot'
+
+      
+
+stages:
+- stage: buildstage
+  jobs:
+  - job: mybuildingjob
+    steps:
+        - task: UseDotNet@2
+          displayName: 'Use .NET SDK ${{parameters.dotnetSdkVersion}}'
+          inputs:
+            version: '${{parameters.dotnetSdkVersion}}'
+
+        - task: Npm@1
+          displayName: 'Run npm install'
+          inputs:
+            verbose: false
+
+        - script: './node_modules/.bin/node-sass ${{parameters.wwwrootDir}} --output ${{parameters.wwwrootDir}}'
+          displayName: 'Compile Sass assets'
+
+        - task: gulp@1
+          displayName: 'Run gulp tasks'
+
+        - script: 'echo "$(Build.DefinitionName), $(Build.BuildId), $(Build.BuildNumber)" > buildinfo.txt'
+          displayName: 'Write build info'
+          workingDirectory: ${{parameters.wwwrootDir}}
+
+        - task: DotNetCoreCLI@2
+          displayName: 'Restore project dependencies'
+          inputs:
+            command: 'restore'
+            projects: '**/*.csproj'
+
+        - task: DotNetCoreCLI@2
+          displayName: 'Build the project - ${{parameters.buildConfiguration}}'
+          inputs:
+            command: 'build'
+            arguments: '--no-restore --configuration ${{parameters.buildConfiguration}}'
+            projects: '**/*.csproj'
+
+        - task: DotNetCoreCLI@2
+          displayName: 'Publish the project - ${{parameters.buildConfiguration}}'
+          inputs:
+            command: 'publish'
+            projects: '**/*.csproj'
+            publishWebProjects: false
+            arguments: '--no-build --configuration ${{parameters.buildConfiguration}} --output $(Build.ArtifactStagingDirectory)/${{parameters.buildConfiguration}}'
+            zipAfterPublish: true
+        - bash: ls $(Build.ArtifactStagingDirectory)/${{parameters.buildConfiguration}}
+        - bash: ls $(Build.ArtifactStagingDirectory)   
+        - task: PublishBuildArtifacts@1
+          inputs:
+            pathToPublish: '$(Build.ArtifactStagingDirectory)'
+            artifactName: drop

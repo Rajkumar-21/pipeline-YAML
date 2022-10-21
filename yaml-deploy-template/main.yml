@@ -1,0 +1,50 @@
+name: $(Build.DefinitionName)_$(Build.Reason)_$(Date:yyyyMMdd)
+trigger:
+- none
+variables:
+  solution: '**/*.sln'
+  buildPlatform: 'Any CPU'
+  buildConfiguration: 'Release'
+  azureSubscription: $(azSubscription)
+  ResourceGroupName: cicd-myresgroup
+  vmImage: ubuntu-latest
+  artifactName: Out
+  env: dev
+pool:
+  vmImage: ubuntu-latest
+# Stages
+steps:
+  - task: NuGetToolInstaller@1
+  - task: NuGetCommand@2
+    inputs:
+      restoreSolution: '$(solution)'
+# Builing the solution
+  - task: VSBuild@1
+    inputs:
+      solution: '$(solution)'
+      msbuildArgs: '/p:DeployOnBuild=true /p:WebPublishMethod=Package /p:PackageAsSingleFile=true /p:SkipInvalidConfigurations=true /p:PackageLocation="$(build.artifactStagingDirectory)"'
+      platform: '$(buildPlatform)'
+      configuration: '$(buildConfiguration)'
+
+  - task: VSTest@2
+    inputs:
+      platform: '$(buildPlatform)'
+      configuration: '$(buildConfiguration)'
+
+  - task: PublishBuildArtifacts@1
+    inputs:
+      PathtoPublish: '$(Build.ArtifactStagingDirectory)'
+      ArtifactName: $(artifactName)
+      publishLocation: 'Container'
+  - task: DownloadPipelineArtifact@2
+    inputs:
+      buildType: 'current'
+      artifactName: $(artifactName)
+      targetPath: '$(System.ArtifactStagingDirectory)'
+
+  - template: deploy.yml
+    parameters:
+      environment: ${{variables.env}}
+      artifactName: ${{variables.artifactName}}
+      azureSubscription: ${{variables.azureSubscription}}
+      resourceGroupName: ${{variables.ResourceGroupName}}

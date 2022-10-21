@@ -1,0 +1,31 @@
+az group create --name webapp-rg-qa --location eastus;az group create --name webapp-rg-dev --location eastus;az group create --name webapp-rg-test --location eastus
+
+az group create --name cicd-webapp-rg-prod --location eastus
+
+
+==
+
+az appservice plan create --name webapp-appsvc-qa --resource-group webapp-rg-qa --location eastus --sku B3;az appservice plan create --name webapp-appsvc-dev --resource-group webapp-rg-dev --location eastus --sku B3;az appservice plan create --name webapp-appsvc-test --resource-group webapp-rg-test --location eastus --sku B3
+
+az appservice plan create --name cicd-webapp-appsvc-prod --resource-group cicd-webapp-rg-prod --location eastus --sku B3
+==
+
+az webapp list-runtimes
+
+==
+
+az webapp create --name webapp-qa-App --resource-group webapp-rg-qa --plan webapp-appsvc-qa --runtime "ASPNET:V4.8";az webapp create --name webapp-dev-App --resource-group webapp-rg-dev --plan webapp-appsvc-dev --runtime "ASPNET:V4.8";az webapp create --name webapp-test-App --resource-group webapp-rg-test --plan webapp-appsvc-test --runtime "ASPNET:V4.8"
+az webapp create --name cicd-webapp-prod --resource-group cicd-webapp-rg-prod --plan cicd-webapp-appsvc-prod --runtime "ASPNET:V4.8"
+
+==
+
+az webapp list  --query "[].{hostName: defaultHostName, state: state}"  --output table
+
+
+https://github.com/MicrosoftDocs/mslearn-tailspin-spacegame-web.git
+
+
+az account list-locations --query "[].{Name: name, DisplayName: displayName}" --output table
+
+
+az group delete --name cicd-webapp-rg-qa;az group delete --name cicd-webapp-rg-dev;az group delete --name cicd-webapp-rg-test;az group delete --name cicd-webapp-rg-prod

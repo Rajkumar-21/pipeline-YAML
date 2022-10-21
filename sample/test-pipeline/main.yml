@@ -1,0 +1,24 @@
+name: $(Build.DefinitionName)-$(Build.Reason)
+trigger: none
+
+pool:
+  vmImage: ubuntu-latest
+
+variables:
+  - group: myvargroup
+  - env: dev
+  - buildConfiguration: 'Release'
+  - dotnetSdkVersion: '6.x'
+  - azureSubscription: MyAzureServiceConnection
+
+#$(rev:r)
+stages:
+- template: build-template.yml
+  parameters:
+    buildConfiguration: ${{variables.buildConfiguration}}
+    dotnetSdkVersion: ${{variables.dotnetSdkVersion}}
+- template: deploy-template.yml
+  parameters:
+    buildConfiguration: ${{variables.buildConfiguration}}
+    environment: ${{variables.env}}
+    azureSubscription: ${{variables.azureSubscription}}

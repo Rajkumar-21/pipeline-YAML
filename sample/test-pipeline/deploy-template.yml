@@ -1,0 +1,69 @@
+parameters:
+- name: environment
+  type: string
+- name: buildConfiguration
+  type: string
+- name: azureSubscription
+  type: string    
+      
+stages:
+- ${{ if eq(parameters.environment, 'dev') }}:
+  - stage: devDeploy
+    jobs:
+    - deployment: devDeploy
+      environment: ${{parameters.environment}}
+      strategy:
+        runOnce:
+          deploy:
+            steps:
+            - task: AzureWebApp@1
+              displayName: 'Azure App Service Deploy: website'
+              inputs:
+                azureSubscription: ${{parameters.azureSubscription}}
+                resourceGroupName: cicd-webapp-rg-${{parameters.environment}}
+                appType: 'webApp'
+                appName: 'cicd-webapp-${{parameters.environment}}'
+                package: '$(Pipeline.Workspace)/drop/${{parameters.buildConfiguration}}/*.zip'
+                deploymentMethod: 'auto'
+            
+            
+
+- ${{ if eq(parameters.environment, 'qa') }}:
+  - stage: qaDeploy
+    jobs:
+    - deployment: qaDeploy
+      environment: ${{parameters.environment}}
+      strategy:
+        runOnce:
+          deploy:
+            steps:
+            - bash: ls '$(Pipeline.Workspace)/drop/${{parameters.buildConfiguration}}' 
+            - task: AzureWebApp@1
+              displayName: 'Azure App Service Deploy: website'
+              inputs:
+                azureSubscription: ${{parameters.azureSubscription}}
+                resourceGroupName: cicd-webapp-rg-${{parameters.environment}}
+                appType: 'webApp'
+                appName: 'cicd-webapp-${{parameters.environment}}'
+                package: '$(Pipeline.Workspace)/drop/${{parameters.buildConfiguration}}/*.zip'
+                deploymentMethod: 'auto'
+
+- ${{ if eq(parameters.environment, 'test') }}:
+  - stage: testDeploy
+    jobs:
+    - deployment: testDeploy
+      environment: ${{parameters.environment}}
+      strategy:
+        runOnce:
+          deploy:
+            steps:
+            - bash: ls '$(Pipeline.Workspace)/drop/${{parameters.buildConfiguration}}' 
+            - task: AzureWebApp@1
+              displayName: 'Azure App Service Deploy: website'
+              inputs:
+                azureSubscription: ${{parameters.azureSubscription}}
+                resourceGroupName: cicd-webapp-rg-${{parameters.environment}}
+                appType: 'webApp'
+                appName: 'cicd-webapp-${{parameters.environment}}'
+                package: '$(Pipeline.Workspace)/drop/${{parameters.buildConfiguration}}/*.zip'
+                deploymentMethod: 'auto'
